@@ -42,11 +42,15 @@ process.options = cms.untracked.PSet(
 
 # ******************************************************************************
 #                  IMPORTANT! Define output event content                       
+# Reduction factor is 5.2 = 86.9 kB per event / 16.7 kB per event               
+# calculated based on 1k events of single muon gun sample                       
 # ******************************************************************************
 fullRECO = False
 if (fullRECO == True):
+  print "IMPORTANT! Full RECO content will be stored in output file!"
   outputEventContent = process.RECOEventContent.outputCommands
 else:
+  print "IMPORTANT! Reduced (selected branches) RECO content will be stored in output file!"
   outputEventContent = cms.untracked.vstring('drop *', 
       # Keep all type of muons
       'keep *_muons_*_*',
