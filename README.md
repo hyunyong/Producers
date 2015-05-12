@@ -5,7 +5,7 @@ In order to generate the single muon gun sample there are several steps to follo
 1) First - check out this package into an appropriate CMSSW release (73X), cmsenv, compile.
 
 2) Setup crab & voms: 
-source /cvmfs/cms.cern.ch/crab3/crab.sh
+source /cvmfs/cms.cern.ch/crab3/crab.sh 
 voms-proxy-init -voms cms -valid 192:00
 
 3) You can switch between full and filtered output via a flag in here:
