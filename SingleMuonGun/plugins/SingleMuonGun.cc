@@ -56,6 +56,22 @@ using namespace edm;
 using namespace std;
 using namespace CLHEP;
 
+namespace {
+  CLHEP::HepRandomEngine& getEngineReference()
+  {
+
+    Service<RandomNumberGenerator> rng;
+    if(!rng.isAvailable()) {
+      throw cms::Exception("Configuration")
+       << "The RandomNumberProducer module requires the RandomNumberGeneratorService\n"
+          "which appears to be absent.  Please add that service to your configuration\n"
+          "or remove the modules that require it.";
+    }
+    // The Service has already instantiated an engine.  Make contact with it.
+    return (rng->getEngine());
+  }
+}
+
 //
 // class declaration
 //
@@ -79,7 +95,10 @@ class SingleMuonGun : public edm::EDProducer {
   
   // the event format itself
   HepMC::GenEvent* m_Evt;
-  
+
+  CLHEP::HepRandomEngine& m_RandomEngine;
+  CLHEP::RandFlat*        m_RandomGenerator;
+
   // parameters
   int    m_Verbosity;
   int    m_partID;
@@ -107,6 +126,8 @@ class SingleMuonGun : public edm::EDProducer {
 //
 SingleMuonGun::SingleMuonGun(const edm::ParameterSet& iConfig)
   : m_Evt(0)
+  , m_RandomEngine( getEngineReference() )
+  , m_RandomGenerator(0)
   , m_Verbosity(        iConfig.getUntrackedParameter<int>( "Verbosity",0 ) )
   , m_ConstPt_eq_MinPt( iConfig.getParameter<bool>("ConstPt_eq_MinPt") )
   , m_minPt(            iConfig.getParameter<double>("MinPt") )
@@ -117,13 +138,7 @@ SingleMuonGun::SingleMuonGun(const edm::ParameterSet& iConfig)
   , m_maxPhi(           iConfig.getParameter<double>("MaxPhi") )
 {
   
-  Service<RandomNumberGenerator> rng;
-  if(!rng.isAvailable()) {
-    throw cms::Exception("Configuration")
-      << "The RandomNumberProducer module requires the RandomNumberGeneratorService\n"
-         "which appears to be absent. Please add that service to your configuration\n"
-         "or remove the modules that require it.";
-  }
+  m_RandomGenerator = new CLHEP::RandFlat(m_RandomEngine);
 
   produces<HepMCProduct>();
   produces<GenEventInfoProduct>();
@@ -149,16 +164,13 @@ SingleMuonGun::~SingleMuonGun()
 void SingleMuonGun::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   
-  edm::Service<edm::RandomNumberGenerator> rng;
-  CLHEP::HepRandomEngine* engine = &rng->getEngine(iEvent.streamID());
-  
   if ( m_Verbosity > 0 ) cout << " SingleMuonGunProducer : Begin New Event Generation" << endl;
   
   m_Evt = new HepMC::GenEvent();
   
   HepMC::GenVertex* Vtx = new HepMC::GenVertex( HepMC::FourVector(0.,0.,0.) );
   
-  double muon_sign_double = CLHEP::RandFlat::shoot(engine, -1.0, 1.0) ;
+  double muon_sign_double = m_RandomGenerator->fire(-1.0,  1.0);
   if ( muon_sign_double < 0 ) {
     m_partID = -13;
     m_charge =   1;
@@ -178,8 +190,8 @@ void SingleMuonGun::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if ( m_Verbosity >= 10 ) cout << " SingleMuonGunProducer : Gun with pT spectrum of muons as in 2012 data" << endl;
     double pt_bin_probability = 0.0;
     while(1) {
-      pt    = CLHEP::RandFlat::shoot(engine, m_minPt, m_maxPt);
-      pt_bin_probability = CLHEP::RandFlat::shoot(engine, 0.0, 0.46684); // simulate pT spectrum of muons as in 2012 data
+      pt    = m_RandomGenerator->fire(m_minPt,  m_maxPt);
+      pt_bin_probability = m_RandomGenerator->fire(0.0, 0.46684); // simulate pT spectrum of muons as in 2012 data
       if (pt >= 30.0  && pt < 40.0  && pt_bin_probability < 0.46684     ) break;
       if (pt >= 40.0  && pt < 50.0  && pt_bin_probability < 0.3498604   ) break;
       if (pt >= 50.0  && pt < 60.0  && pt_bin_probability < 0.09976921  ) break;
@@ -200,8 +212,8 @@ void SingleMuonGun::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
   }
   
-  double eta = CLHEP::RandFlat::shoot(engine, m_minEta, m_maxEta);
-  double phi = CLHEP::RandFlat::shoot(engine, m_minPhi, m_maxPhi);
+  double eta = m_RandomGenerator->fire(m_minEta, m_maxEta);
+  double phi = m_RandomGenerator->fire(m_minPhi, m_maxPhi);
   
   if ( m_Verbosity >= 20 ) cout << " SingleMuonGunProducer : muon ID = " << m_partID << " q = " << m_charge << " pT = " << pt << " eta = " << eta << " phi = " << phi << endl;
   
