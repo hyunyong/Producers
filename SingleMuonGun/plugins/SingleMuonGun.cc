@@ -31,7 +31,8 @@
 #include "HepMC/GenEvent.h"
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/one/EDProducer.h"
+//#include "FWCore/Framework/interface/one/EDProducer.h" // works in CMSSW_7_3_X
+#include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/Framework/interface/ESHandle.h"
