@@ -81,9 +81,9 @@ MuAl_RECOSIMEventContent = cms.PSet(
   eventAutoFlushCompressedSize=cms.untracked.int32(5*1024*1024)
 )
 
-# Extend  RECOSIM event content following definition of RECOEventContent in Configuration/EventContent/python/EventContent_cff.py
+# Extend  RECOSIM event content following definition of RECOSIMEventContent in Configuration/EventContent/python/EventContent_cff.py
 #  - collections not required for Muon Alignmnet are commented out to reduce event size
-MuAl_RECOSIMEventContent.outputCommands.extend(MuAl_RECOSIMEventContent.outputCommands)
+MuAl_RECOSIMEventContent.outputCommands.extend(MuAl_RECOEventContent.outputCommands)
 MuAl_RECOSIMEventContent.outputCommands.extend(GeneratorInterfaceRECO.outputCommands)
 #MuAl_RECOSIMEventContent.outputCommands.extend(RecoGenMETRECO.outputCommands)
 #MuAl_RECOSIMEventContent.outputCommands.extend(RecoGenJetsRECO.outputCommands)
@@ -93,4 +93,143 @@ MuAl_RECOSIMEventContent.outputCommands.extend(SimMuonRECO.outputCommands)
 #MuAl_RECOSIMEventContent.outputCommands.extend(SimCalorimetryRECO.outputCommands)
 MuAl_RECOSIMEventContent.outputCommands.extend(SimGeneralRECO.outputCommands)
 #MuAl_RECOSIMEventContent.outputCommands.extend(MEtoEDMConverterRECO.outputCommands)
+
+################################################################################
+#                                   CUSTOM GENERIC                              
+################################################################################
+
+# Define empty Custom Generic event content
+MuAl_CustomGenericEventContent = cms.PSet(
+  outputCommands = cms.untracked.vstring('drop *'),
+  splitLevel = cms.untracked.int32(0),
+  eventAutoFlushCompressedSize=cms.untracked.int32(5*1024*1024)
+)
+
+# Extend Custom Generic event content
+# - use only collections required for Muon Alignment
+MuAl_CustomGenericEventContent.outputCommands.extend( cms.untracked.vstring(
+      #
+      # Keep trigger information
+      'keep *_TriggerResults_*_*',
+      'keep L1AcceptBunchCrossings_*_*_*',
+      'keep L1GlobalTriggerReadoutRecord_gtDigis_*_*',
+      #
+      # Keep DCS information
+      'keep DcsStatuss_scalersRawToDigi_*_*',
+      #
+      # Keep beam spot and vertices
+      'keep *_offlineBeamSpot_*_*',
+      'keep *_offlinePrimaryVertices_*_*',
+      #
+      # Keep generator level information
+      'keep *_genParticles_*_*',
+      'keep *_generator_*_*',
+      'drop edmHepMCProduct_generator_*_*',
+    )
+)
+
+################################################################################
+#                                   CUSTOM SIM                                  
+################################################################################
+
+# Define empty Custom SIM event content
+MuAl_CustomSIMEventContent = cms.PSet(
+  outputCommands = cms.untracked.vstring('drop *'),
+  splitLevel = cms.untracked.int32(0),
+  eventAutoFlushCompressedSize=cms.untracked.int32(5*1024*1024)
+)
+
+# Extend Custom SIM event content
+# - use only collections required for Muon Alignment
+MuAl_CustomSIMEventContent.outputCommands.extend(MuAl_CustomGenericEventContent.outputCommands)
+MuAl_CustomSIMEventContent.outputCommands.extend( cms.untracked.vstring(
+      #
+      # Sim hits in Muon system
+      'keep *_g4SimHits_MuonDTHits_*',
+      'keep *_g4SimHits_MuonCSCHits_*',
+      'keep *_g4SimHits_MuonRPCHits_*',
+      'keep *_simMuonDTDigis_*_*',
+      'keep *_simMuonCSCDigis_*_*',
+      'keep *_simMuonRPCDigis_*_*',
+      #
+      # Sim hits in Tracker
+      'keep *_g4SimHits_TrackerHitsTECLowTof_*',
+      'keep *_g4SimHits_TrackerHitsTOBLowTof_*',
+      'keep *_g4SimHits_TrackerHitsTIBLowTof_*',
+      'keep *_g4SimHits_TrackerHitsTIDLowTof_*',
+      'keep *_g4SimHits_TrackerHitsTECHighTof_*',
+      'keep *_g4SimHits_TrackerHitsTOBHighTof_*',
+      'keep *_g4SimHits_TrackerHitsTIBHighTof_*',
+      'keep *_g4SimHits_TrackerHitsTIDHighTof_*',
+      'keep *_g4SimHits_TrackerHitsPixelBarrelLowTof_*',
+      'keep *_g4SimHits_TrackerHitsPixelEndcapLowTof_*',
+      'keep *_g4SimHits_TrackerHitsPixelBarrelHighTof_*',
+      'keep *_g4SimHits_TrackerHitsPixelEndcapHighTof_*',
+      #
+      # Sim Tracks and Vertexs
+      'keep SimTracks_g4SimHits_*_*',
+      'keep SimVertexs_g4SimHits_*_*',
+    )
+)
+
+################################################################################
+#                                   CUSTOM RECO                                 
+################################################################################
+
+# Define empty Custom RECO event content
+MuAl_CustomRECOEventContent = cms.PSet(
+  outputCommands = cms.untracked.vstring('drop *'),
+  splitLevel = cms.untracked.int32(0),
+  eventAutoFlushCompressedSize=cms.untracked.int32(5*1024*1024)
+)
+
+# Extend Custom RECO event content
+# - use only collections required for Muon Alignment
+MuAl_CustomRECOEventContent.outputCommands.extend(MuAl_CustomGenericEventContent.outputCommands)
+MuAl_CustomRECOEventContent.outputCommands.extend( cms.untracked.vstring(
+      #
+      # Muons
+      'keep *_muons_*_*',
+      #
+      # Muons from cosmics
+#      'keep *_muonsFromCosmics_*_*',
+#      'keep *_muonsFromCosmics1Leg_*_*',
+      #
+      # General tracks from collisions
+      'keep *_generalTracks_*_*',
+      #
+      # Muon tracks
+      'keep *_globalMuons_*_*',
+      'keep *_standAloneMuons_*_*',
+#      'keep *_refittedStandAloneMuons_*_*',
+#      'keep *_displacedStandAloneMuons_*_*',
+#      'keep *_standAloneSETMuons_*_*',
+#      'keep *_globalSETMuons_*_*',
+#      'keep *_tevMuons_*_*',
+       #
+       # Muon tracks from cosmics
+#      'keep *_cosmicMuons_*_*',
+#      'keep *_cosmicMuons1Leg_*_*',
+#      'keep *_globalCosmicMuons_*_*',
+#      'keep *_globalCosmicMuons1Leg_*_*',
+      #
+      # Muon Rec Hits and Digis
+      'keep *_muonCSCDigis_*_*',
+      'keep *_muonDTDigis_*_*',
+      'keep *_muonRPCDigis_*_*',
+      'keep *_dt1DRecHits_*_*',
+      'keep *_dt2DSegments_*_*',
+      'keep *_dt4DSegments_*_*',
+      'keep *_csc2DRecHits_*_*',
+      'keep *_cscSegments_*_*',
+      'keep *_rpcRecHits_*_*',
+      #
+      # Silicon Pixel and Strip Clusters = Rec Hits)
+      'keep SiPixelClusteredmNewDetSetVector_siPixelClusters_*_*',
+      'keep SiStripClusteredmNewDetSetVector_siStripClusters_*_*',
+    )
+)
+
+
+
 
