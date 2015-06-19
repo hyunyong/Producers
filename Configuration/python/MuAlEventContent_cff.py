@@ -224,12 +224,25 @@ MuAl_CustomRECOEventContent.outputCommands.extend( cms.untracked.vstring(
       'keep *_cscSegments_*_*',
       'keep *_rpcRecHits_*_*',
       #
-      # Silicon Pixel and Strip Clusters = Rec Hits)
+      # Silicon Pixel and Strip Clusters = Rec Hits
       'keep SiPixelClusteredmNewDetSetVector_siPixelClusters_*_*',
       'keep SiStripClusteredmNewDetSetVector_siStripClusters_*_*',
     )
 )
 
+################################################################################
+#                                   CUSTOM RECOSIM                                 
+################################################################################
 
+# Define empty Custom RECOSIM event content
+MuAl_CustomRECOSIMEventContent = cms.PSet(
+  outputCommands = cms.untracked.vstring('drop *'),
+  splitLevel = cms.untracked.int32(0),
+  eventAutoFlushCompressedSize=cms.untracked.int32(5*1024*1024)
+)
 
-
+# Extend Custom RECOSIM event content
+# - use only collections required for Muon Alignment
+MuAl_CustomRECOSIMEventContent.outputCommands.extend(MuAl_CustomGenericEventContent.outputCommands)
+MuAl_CustomRECOSIMEventContent.outputCommands.extend(MuAl_CustomSIMEventContent.outputCommands)
+MuAl_CustomRECOSIMEventContent.outputCommands.extend(MuAl_CustomRECOEventContent.outputCommands)
