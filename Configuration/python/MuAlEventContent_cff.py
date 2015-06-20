@@ -98,34 +98,29 @@ MuAl_RECOSIMEventContent.outputCommands.extend(SimGeneralRECO.outputCommands)
 #                                   CUSTOM GENERIC                              
 ################################################################################
 
-# Define empty Custom Generic event content
-MuAl_CustomGenericEventContent = cms.PSet(
-  outputCommands = cms.untracked.vstring('drop *'),
-  splitLevel = cms.untracked.int32(0),
-  eventAutoFlushCompressedSize=cms.untracked.int32(5*1024*1024)
-)
-
-# Extend Custom Generic event content
+# Define Custom Generic event content
 # - use only collections required for Muon Alignment
-MuAl_CustomGenericEventContent.outputCommands.extend( cms.untracked.vstring(
-      #
-      # Keep trigger information
-      'keep *_TriggerResults_*_*',
-      'keep L1AcceptBunchCrossings_*_*_*',
-      'keep L1GlobalTriggerReadoutRecord_gtDigis_*_*',
-      #
-      # Keep DCS information
-      'keep DcsStatuss_scalersRawToDigi_*_*',
-      #
-      # Keep beam spot and vertices
-      'keep *_offlineBeamSpot_*_*',
-      'keep *_offlinePrimaryVertices_*_*',
-      #
-      # Keep generator level information
-      'keep *_genParticles_*_*',
-      'keep *_generator_*_*',
-      'drop edmHepMCProduct_generator_*_*',
-    )
+# - no definition of empty Custom Generic event content, since it is not required for Muon Alignment
+MuAl_CustomGeneric = cms.PSet(
+  outputCommands = cms.untracked.vstring(
+    #
+    # Keep trigger information
+    'keep *_TriggerResults_*_*',
+    'keep L1AcceptBunchCrossings_*_*_*',
+    'keep L1GlobalTriggerReadoutRecord_gtDigis_*_*',
+    #
+    # Keep DCS information
+    'keep DcsStatuss_scalersRawToDigi_*_*',
+    #
+    # Keep beam spot and vertices
+    'keep *_offlineBeamSpot_*_*',
+    'keep *_offlinePrimaryVertices_*_*',
+    #
+    # Keep generator level information
+    'keep *_genParticles_*_*',
+    'keep *_generator_*_*',
+    'drop edmHepMCProduct_generator_*_*',
+  )
 )
 
 ################################################################################
@@ -141,36 +136,39 @@ MuAl_CustomSIMEventContent = cms.PSet(
 
 # Extend Custom SIM event content
 # - use only collections required for Muon Alignment
-MuAl_CustomSIMEventContent.outputCommands.extend(MuAl_CustomGenericEventContent.outputCommands)
-MuAl_CustomSIMEventContent.outputCommands.extend( cms.untracked.vstring(
-      #
-      # Sim hits in Muon system
-      'keep *_g4SimHits_MuonDTHits_*',
-      'keep *_g4SimHits_MuonCSCHits_*',
-      'keep *_g4SimHits_MuonRPCHits_*',
-      'keep *_simMuonDTDigis_*_*',
-      'keep *_simMuonCSCDigis_*_*',
-      'keep *_simMuonRPCDigis_*_*',
-      #
-      # Sim hits in Tracker
-      'keep *_g4SimHits_TrackerHitsTECLowTof_*',
-      'keep *_g4SimHits_TrackerHitsTOBLowTof_*',
-      'keep *_g4SimHits_TrackerHitsTIBLowTof_*',
-      'keep *_g4SimHits_TrackerHitsTIDLowTof_*',
-      'keep *_g4SimHits_TrackerHitsTECHighTof_*',
-      'keep *_g4SimHits_TrackerHitsTOBHighTof_*',
-      'keep *_g4SimHits_TrackerHitsTIBHighTof_*',
-      'keep *_g4SimHits_TrackerHitsTIDHighTof_*',
-      'keep *_g4SimHits_TrackerHitsPixelBarrelLowTof_*',
-      'keep *_g4SimHits_TrackerHitsPixelEndcapLowTof_*',
-      'keep *_g4SimHits_TrackerHitsPixelBarrelHighTof_*',
-      'keep *_g4SimHits_TrackerHitsPixelEndcapHighTof_*',
-      #
-      # Sim Tracks and Vertexs
-      'keep SimTracks_g4SimHits_*_*',
-      'keep SimVertexs_g4SimHits_*_*',
-    )
+MuAl_CustomSIM = cms.PSet(
+  outputCommands = cms.untracked.vstring(
+    #
+    # Sim hits in Muon system
+    'keep *_g4SimHits_MuonDTHits_*',
+    'keep *_g4SimHits_MuonCSCHits_*',
+    'keep *_g4SimHits_MuonRPCHits_*',
+    'keep *_simMuonDTDigis_*_*',
+    'keep *_simMuonCSCDigis_*_*',
+    'keep *_simMuonRPCDigis_*_*',
+    #
+    # Sim hits in Tracker
+    'keep *_g4SimHits_TrackerHitsTECLowTof_*',
+    'keep *_g4SimHits_TrackerHitsTOBLowTof_*',
+    'keep *_g4SimHits_TrackerHitsTIBLowTof_*',
+    'keep *_g4SimHits_TrackerHitsTIDLowTof_*',
+    'keep *_g4SimHits_TrackerHitsTECHighTof_*',
+    'keep *_g4SimHits_TrackerHitsTOBHighTof_*',
+    'keep *_g4SimHits_TrackerHitsTIBHighTof_*',
+    'keep *_g4SimHits_TrackerHitsTIDHighTof_*',
+    'keep *_g4SimHits_TrackerHitsPixelBarrelLowTof_*',
+    'keep *_g4SimHits_TrackerHitsPixelEndcapLowTof_*',
+    'keep *_g4SimHits_TrackerHitsPixelBarrelHighTof_*',
+    'keep *_g4SimHits_TrackerHitsPixelEndcapHighTof_*',
+    #
+    # Sim Tracks and Vertexs
+    'keep SimTracks_g4SimHits_*_*',
+    'keep SimVertexs_g4SimHits_*_*',
+  )
 )
+
+MuAl_CustomSIMEventContent.outputCommands.extend(MuAl_CustomGeneric.outputCommands)
+MuAl_CustomSIMEventContent.outputCommands.extend(MuAl_CustomSIM.outputCommands)
 
 ################################################################################
 #                                   CUSTOM RECO                                 
@@ -185,50 +183,53 @@ MuAl_CustomRECOEventContent = cms.PSet(
 
 # Extend Custom RECO event content
 # - use only collections required for Muon Alignment
-MuAl_CustomRECOEventContent.outputCommands.extend(MuAl_CustomGenericEventContent.outputCommands)
-MuAl_CustomRECOEventContent.outputCommands.extend( cms.untracked.vstring(
-      #
-      # Muons
-      'keep *_muons_*_*',
-      #
-      # Muons from cosmics
+MuAl_CustomRECO = cms.PSet(
+  outputCommands = cms.untracked.vstring(
+    #
+    # Muons
+    'keep *_muons_*_*',
+    #
+    # Muons from cosmics
 #      'keep *_muonsFromCosmics_*_*',
 #      'keep *_muonsFromCosmics1Leg_*_*',
-      #
-      # General tracks from collisions
-      'keep *_generalTracks_*_*',
-      #
-      # Muon tracks
-      'keep *_globalMuons_*_*',
-      'keep *_standAloneMuons_*_*',
+    #
+    # General tracks from collisions
+    'keep *_generalTracks_*_*',
+    #
+    # Muon tracks
+    'keep *_globalMuons_*_*',
+    'keep *_standAloneMuons_*_*',
 #      'keep *_refittedStandAloneMuons_*_*',
 #      'keep *_displacedStandAloneMuons_*_*',
 #      'keep *_standAloneSETMuons_*_*',
 #      'keep *_globalSETMuons_*_*',
 #      'keep *_tevMuons_*_*',
-       #
-       # Muon tracks from cosmics
+    #
+    # Muon tracks from cosmics
 #      'keep *_cosmicMuons_*_*',
 #      'keep *_cosmicMuons1Leg_*_*',
 #      'keep *_globalCosmicMuons_*_*',
 #      'keep *_globalCosmicMuons1Leg_*_*',
-      #
-      # Muon Rec Hits and Digis
-      'keep *_muonCSCDigis_*_*',
-      'keep *_muonDTDigis_*_*',
-      'keep *_muonRPCDigis_*_*',
-      'keep *_dt1DRecHits_*_*',
-      'keep *_dt2DSegments_*_*',
-      'keep *_dt4DSegments_*_*',
-      'keep *_csc2DRecHits_*_*',
-      'keep *_cscSegments_*_*',
-      'keep *_rpcRecHits_*_*',
-      #
-      # Silicon Pixel and Strip Clusters = Rec Hits
-      'keep SiPixelClusteredmNewDetSetVector_siPixelClusters_*_*',
-      'keep SiStripClusteredmNewDetSetVector_siStripClusters_*_*',
-    )
+    #
+    # Muon Rec Hits and Digis
+    'keep *_muonCSCDigis_*_*',
+    'keep *_muonDTDigis_*_*',
+    'keep *_muonRPCDigis_*_*',
+    'keep *_dt1DRecHits_*_*',
+    'keep *_dt2DSegments_*_*',
+    'keep *_dt4DSegments_*_*',
+    'keep *_csc2DRecHits_*_*',
+    'keep *_cscSegments_*_*',
+    'keep *_rpcRecHits_*_*',
+    #
+    # Silicon Pixel and Strip Clusters = Rec Hits
+    'keep SiPixelClusteredmNewDetSetVector_siPixelClusters_*_*',
+    'keep SiStripClusteredmNewDetSetVector_siStripClusters_*_*',
+  )
 )
+
+MuAl_CustomRECOEventContent.outputCommands.extend(MuAl_CustomGeneric.outputCommands)
+MuAl_CustomRECOEventContent.outputCommands.extend(MuAl_CustomRECO.outputCommands)
 
 ################################################################################
 #                                   CUSTOM RECOSIM                                 
@@ -243,6 +244,6 @@ MuAl_CustomRECOSIMEventContent = cms.PSet(
 
 # Extend Custom RECOSIM event content
 # - use only collections required for Muon Alignment
-MuAl_CustomRECOSIMEventContent.outputCommands.extend(MuAl_CustomGenericEventContent.outputCommands)
-MuAl_CustomRECOSIMEventContent.outputCommands.extend(MuAl_CustomSIMEventContent.outputCommands)
-MuAl_CustomRECOSIMEventContent.outputCommands.extend(MuAl_CustomRECOEventContent.outputCommands)
+MuAl_CustomRECOSIMEventContent.outputCommands.extend(MuAl_CustomGeneric.outputCommands)
+MuAl_CustomRECOSIMEventContent.outputCommands.extend(MuAl_CustomRECO.outputCommands)
+MuAl_CustomRECOSIMEventContent.outputCommands.extend(MuAl_CustomSIM.outputCommands)
