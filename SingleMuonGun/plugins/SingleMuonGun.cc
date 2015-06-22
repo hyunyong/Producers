@@ -214,6 +214,9 @@ void SingleMuonGun::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   double eta = m_RandomGenerator->fire(m_minEta, m_maxEta);
   double phi = m_RandomGenerator->fire(m_minPhi, m_maxPhi);
   
+  double muon_eta_sign_double = m_RandomGenerator->fire(-1.0,  1.0);
+  if (muon_eta_sign_double < 0) eta =* -1;
+  
   if ( m_Verbosity >= 20 ) cout << " SingleMuonGunProducer : muon ID = " << m_partID << " q = " << m_charge << " pT = " << pt << " eta = " << eta << " phi = " << phi << endl;
   
   double mass    = 0.1056583715;
