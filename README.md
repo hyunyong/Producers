@@ -17,3 +17,9 @@ Producers/SingleMuonGun/test/crabConfig.py
 5) From inside the Producers/SingleMuonGun/test/ directory you can submit the jobs via the command 'crab submit'
 
 
+Instructions for producing single muon.py file for new releases:
+
+Get singleMuon.Py file from CMSSW-> e.g. SingleMuPt10_cfi.py
+
+Run e.g. cmsDriver.py SingleMuPt10_cfi.py -s GEN,SIM,DIGI,L1,DIGI2RAW,HLT,RAW2DIGI,RECO --conditions auto:run2_mc --eventcontent RECO --datatier RECO -n 10 --no_exec --pileup=NoPileUp
+
