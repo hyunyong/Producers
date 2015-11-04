@@ -23,3 +23,5 @@ Get singleMuon.Py file from CMSSW-> e.g. SingleMuPt10_cfi.py
 
 Run e.g. cmsDriver.py SingleMuPt10_cfi.py -s GEN,SIM,DIGI,L1,DIGI2RAW,HLT,RAW2DIGI,RECO --conditions auto:run2_mc --eventcontent RECO --datatier RECO -n 10 --no_exec --pileup=NoPileUp
 
+works: cmsDriver.py SingleMuPt10_cfi.py --conditions auto:mc -n 800 --datatier GEN-SIM-RECO -s GEN,SIM,DIGI:pdigi_valid,L1,DIGI2RAW,RAW2DIGI,L1Reco,RECO --fileout file:SingleMuPt10_cfi.root --no_exec
+
