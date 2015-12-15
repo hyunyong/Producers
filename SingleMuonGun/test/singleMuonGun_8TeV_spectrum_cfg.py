@@ -41,7 +41,7 @@ process.options = cms.untracked.PSet(
 )
 
 # IMPORTANT! Define output event content ***************************************
-fullRECO = True
+fullRECO = False
 if (fullRECO == True):
   print "WARNING! Output format: FULL RECO"
   outputEventContent = process.RECOEventContent.outputCommands
