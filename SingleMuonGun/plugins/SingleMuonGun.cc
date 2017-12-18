@@ -49,6 +49,9 @@
 
 #include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"
 
+#include "TRandom.h"
+#include "TF2.h"
+
 #include "CLHEP/Random/RandFlat.h"
 
 using namespace edm;
@@ -59,7 +62,7 @@ using namespace CLHEP;
 // class declaration
 //
 
-class SingleMuonGun : public edm::EDProducer {
+class SingleMuonGun : public edm::one::EDProducer<> { //understand <> better 
   public:
     explicit SingleMuonGun(const edm::ParameterSet&);
     ~SingleMuonGun();
@@ -68,7 +71,7 @@ class SingleMuonGun : public edm::EDProducer {
     
   private:
     virtual void beginJob() override;
-    virtual void produce(edm::Event&, const edm::EventSetup&) override;
+    virtual void produce( edm::Event&, const edm::EventSetup&) override;
     virtual void endJob() override;
     
     virtual void beginRun(edm::Run&, edm::EventSetup const&);
@@ -77,12 +80,10 @@ class SingleMuonGun : public edm::EDProducer {
   // ----------member data ---------------------------
   
   // the event format itself
-  HepMC::GenEvent* m_Evt;
+  HepMC::GenEvent* m_Evt; 
   
   // parameters
   int    m_Verbosity;
-  int    m_partID;
-  int    m_charge;
   bool   m_ConstPt_eq_MinPt;
   double m_minPt;
   double m_maxPt;
@@ -105,8 +106,8 @@ class SingleMuonGun : public edm::EDProducer {
 // constructors and destructor
 //
 SingleMuonGun::SingleMuonGun(const edm::ParameterSet& iConfig)
-  : m_Evt(0)
-  , m_Verbosity(        iConfig.getUntrackedParameter<int>( "Verbosity",0 ) )
+  //: m_Evt(0)
+  : m_Verbosity(        iConfig.getUntrackedParameter<int>( "Verbosity",0 ) )
   , m_ConstPt_eq_MinPt( iConfig.getParameter<bool>("ConstPt_eq_MinPt") )
   , m_minPt(            iConfig.getParameter<double>("MinPt") )
   , m_maxPt(            iConfig.getParameter<double>("MaxPt") )
@@ -124,7 +125,7 @@ SingleMuonGun::SingleMuonGun(const edm::ParameterSet& iConfig)
          "or remove the modules that require it.";
   }
 
-  produces<HepMCProduct>();
+  produces<HepMCProduct>("unsmeared");
   produces<GenEventInfoProduct>();
   produces<GenRunInfoProduct, InRun>();
   
@@ -145,15 +146,18 @@ SingleMuonGun::~SingleMuonGun()
 //
 
 // ------------ method called on each new Event  ------------
-void SingleMuonGun::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void SingleMuonGun::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)  
 {
-  
+  int    m_partID;
+  int    m_charge;
+
   edm::Service<edm::RandomNumberGenerator> rng;
   CLHEP::HepRandomEngine* engine = &rng->getEngine(iEvent.streamID());
-  
+
+  gRandom->SetSeed(0);
   if ( m_Verbosity > 0 ) cout << " SingleMuonGunProducer : Begin New Event Generation" << endl;
   
-  m_Evt = new HepMC::GenEvent();
+  HepMC::GenEvent* m_Evt = new HepMC::GenEvent();
   
   HepMC::GenVertex* Vtx = new HepMC::GenVertex( HepMC::FourVector(0.0322161,-1.10814e-05, -0.0146611) );
   
@@ -207,6 +211,25 @@ void SingleMuonGun::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   if ( m_Verbosity >= 20 ) cout << " SingleMuonGunProducer : muon ID = " << m_partID << " q = " << m_charge << " pT = " << pt << " eta = " << eta << " phi = " << phi << endl;
   
+  Int_t npar = 3;
+
+  Double_t f2params[npar] = {360.884, .0639069, .00437602 };
+
+
+  TF1 *f1 = new TF1("f1","sin(x)/x",30,250);
+
+  //TF2 *f2 = new TF2("f2","[0]*exp(-([1]+[2]*y*y)*x)",30,250,-3,3, npar);
+  TF2 *f2 =  new TF2("f2","[0]*exp(-([1]+[2]*y*y)*x)", 30, 250, -2.5, 2.5);
+
+  f2->SetParameters(f2params);
+
+  f2->SetNpx(200);
+  f2->SetNpy(200);
+
+  f2->GetRandom2(pt,eta);
+
+  if ( m_Verbosity >= 20 ) cout << " SingleMuonGunProducer  TF2: muon ID = " << m_partID << " q = " << m_charge << " pT = " << pt << " eta = " << eta << " phi = " << phi << endl;
+
   double mass    = 0.1056583715;
   double theta   = 2.*atan(exp(-eta));
   double mom     = pt/sin(theta);
@@ -225,13 +248,19 @@ void SingleMuonGun::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   m_Evt->set_signal_process_id(20) ; 
   
   if ( m_Verbosity >= 30 ) m_Evt->print() ;  
-  
-  auto_ptr<HepMCProduct> BProduct(new HepMCProduct()) ;
-  BProduct->addHepMCData( m_Evt );
-  iEvent.put(BProduct);
 
-  auto_ptr<GenEventInfoProduct> genEventInfo(new GenEventInfoProduct(m_Evt));
-  iEvent.put(genEventInfo);
+    unique_ptr<HepMCProduct> BProduct(new HepMCProduct()) ;
+    BProduct->addHepMCData( m_Evt );
+    iEvent.put(std::move(BProduct), "unsmeared");
+  
+    unique_ptr<GenEventInfoProduct> genEventInfo(new GenEventInfoProduct(m_Evt));
+    iEvent.put(std::move(genEventInfo));
+  //unique_ptr<HepMCProduct> BProduct(new HepMCProduct()) ;
+  //BProduct->addHepMCData( m_Evt );
+  //iEvent.put(std::move(BProduct));
+//
+  //unique_ptr<GenEventInfoProduct> genEventInfo(new GenEventInfoProduct(m_Evt));
+  //iEvent.put(std::move(genEventInfo));
   
   if ( m_Verbosity > 0 ) cout << " SingleMuonGunProducer : Event Generation Done" << endl;
 
