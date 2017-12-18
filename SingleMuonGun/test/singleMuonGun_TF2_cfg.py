@@ -159,7 +159,7 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
 process.genstepfilter.triggerConditions=cms.vstring("generation_step")
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 #process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_design', '')
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '') # Yuriy: Use explicit GT (instead of 'auto:run2_design') for future reproducibility
+process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mcRun2_design_v2', '') # Yuriy: Use explicit GT (instead of 'auto:run2_design') for future reproducibility
 
 # Generate events
 process.generator = cms.EDProducer("SingleMuonGun",
