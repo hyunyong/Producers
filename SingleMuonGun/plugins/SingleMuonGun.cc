@@ -91,6 +91,19 @@ class SingleMuonGun : public edm::one::EDProducer<> { //understand <> better
   double m_maxEta;
   double m_minPhi;
   double m_maxPhi;
+
+  //const Int_t npar = 3;
+  Double_t f2params[3] = {360.884, .0639069, .00437602 }; 
+  TF2 *f2 =  new TF2("f2","[0]*exp(-([1]+[2]*y*y)*x)", 30, 250, -2.5, 2.5);
+
+  int    m_partID;
+  int    m_charge;
+  double pt;
+  double eta; 
+  double phi; 
+  double muon_sign_double;
+  double muon_eta_sign_double;
+
   
 };
 
@@ -128,6 +141,10 @@ SingleMuonGun::SingleMuonGun(const edm::ParameterSet& iConfig)
   produces<HepMCProduct>("unsmeared");
   produces<GenEventInfoProduct>();
   produces<GenRunInfoProduct, InRun>();
+
+  f2->SetParameters(f2params);
+  f2->SetNpx(200);
+  f2->SetNpy(200);
   
 }
 
@@ -148,8 +165,7 @@ SingleMuonGun::~SingleMuonGun()
 // ------------ method called on each new Event  ------------
 void SingleMuonGun::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)  
 {
-  int    m_partID;
-  int    m_charge;
+
 
   edm::Service<edm::RandomNumberGenerator> rng;
   CLHEP::HepRandomEngine* engine = &rng->getEngine(iEvent.streamID());
@@ -161,7 +177,7 @@ void SingleMuonGun::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   HepMC::GenVertex* Vtx = new HepMC::GenVertex( HepMC::FourVector(0.0322161,-1.10814e-05, -0.0146611) );
   
-  double muon_sign_double = CLHEP::RandFlat::shoot(engine, -1.0, 1.0) ;
+  muon_sign_double = CLHEP::RandFlat::shoot(engine, -1.0, 1.0) ;
   if ( muon_sign_double < 0 ) {
     m_partID = -13;
     m_charge =   1;
@@ -170,65 +186,27 @@ void SingleMuonGun::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
     m_charge = -1;
   }
   
-  double pt;
+  eta = CLHEP::RandFlat::shoot(engine, m_minEta, m_maxEta);
+  phi = CLHEP::RandFlat::shoot(engine, m_minPhi, m_maxPhi);
+ 
+  muon_eta_sign_double = CLHEP::RandFlat::shoot(engine, -1.0, 1.0);
   
   if ( m_ConstPt_eq_MinPt == true ) {
     // Gun with constant pT of muons
     if ( m_Verbosity >= 10 ) cout << " SingleMuonGunProducer : Gun with constant pT of muons" << endl;
     pt = m_minPt;
-  } else {
-  // Gun with pT spectrum of muons as in 2012 data
-    if ( m_Verbosity >= 10 ) cout << " SingleMuonGunProducer : Gun with pT spectrum of muons as in 2012 data" << endl;
-    double pt_bin_probability = 0.0;
-    while(1) {
-      pt    = CLHEP::RandFlat::shoot(engine, m_minPt, m_maxPt);
-      pt_bin_probability = CLHEP::RandFlat::shoot(engine, 0.0, 0.46684); // simulate pT spectrum of muons as in 2012 data
-      if (pt >= 30.0  && pt < 40.0  && pt_bin_probability < 0.46684     ) break;
-      if (pt >= 40.0  && pt < 50.0  && pt_bin_probability < 0.3498604   ) break;
-      if (pt >= 50.0  && pt < 60.0  && pt_bin_probability < 0.09976921  ) break;
-      if (pt >= 60.0  && pt < 70.0  && pt_bin_probability < 0.03986568  ) break;
-      if (pt >= 70.0  && pt < 80.0  && pt_bin_probability < 0.0186057   ) break;
-      if (pt >= 80.0  && pt < 90.0  && pt_bin_probability < 0.009773275 ) break;
-      if (pt >= 90.0  && pt < 100.0 && pt_bin_probability < 0.0055456   ) break;
-      if (pt >= 100.0 && pt < 110.0 && pt_bin_probability < 0.003377719 ) break;
-      if (pt >= 110.0 && pt < 120.0 && pt_bin_probability < 0.002205957 ) break;
-      if (pt >= 120.0 && pt < 130.0 && pt_bin_probability < 0.001352316 ) break;
-      if (pt >= 130.0 && pt < 140.0 && pt_bin_probability < 0.0008818916) break;
-      if (pt >= 140.0 && pt < 150.0 && pt_bin_probability < 0.0006362394) break;
-      if (pt >= 150.0 && pt < 160.0 && pt_bin_probability < 0.0004544567) break;
-      if (pt >= 160.0 && pt < 170.0 && pt_bin_probability < 0.0002898697) break;
-      if (pt >= 170.0 && pt < 180.0 && pt_bin_probability < 0.0002481088) break;
-      if (pt >= 180.0 && pt < 190.0 && pt_bin_probability < 0.0001658153) break;
-      if (pt >= 190.0 && pt < 200.0 && pt_bin_probability < 0.0001277392) break;
-    }
+  } else { 
+    if ( m_Verbosity >= 10 ) cout << " SingleMuonGunProducer : Gun with simulated 13TeV (Run2)" << endl;
+    
+
+  
+    f2->GetRandom2(pt,eta);
+    if (muon_eta_sign_double < 0) eta *= -1;
   }
-  
-  double eta = CLHEP::RandFlat::shoot(engine, m_minEta, m_maxEta);
-  double phi = CLHEP::RandFlat::shoot(engine, m_minPhi, m_maxPhi);
-  
-  double muon_eta_sign_double = CLHEP::RandFlat::shoot(engine, -1.0, 1.0);
-  if (muon_eta_sign_double < 0) eta *= -1;
-  
+
   if ( m_Verbosity >= 20 ) cout << " SingleMuonGunProducer : muon ID = " << m_partID << " q = " << m_charge << " pT = " << pt << " eta = " << eta << " phi = " << phi << endl;
-  
-  Int_t npar = 3;
-
-  Double_t f2params[npar] = {360.884, .0639069, .00437602 };
 
 
-  TF1 *f1 = new TF1("f1","sin(x)/x",30,250);
-
-  //TF2 *f2 = new TF2("f2","[0]*exp(-([1]+[2]*y*y)*x)",30,250,-3,3, npar);
-  TF2 *f2 =  new TF2("f2","[0]*exp(-([1]+[2]*y*y)*x)", 30, 250, -2.5, 2.5);
-
-  f2->SetParameters(f2params);
-
-  f2->SetNpx(200);
-  f2->SetNpy(200);
-
-  f2->GetRandom2(pt,eta);
-
-  if ( m_Verbosity >= 20 ) cout << " SingleMuonGunProducer  TF2: muon ID = " << m_partID << " q = " << m_charge << " pT = " << pt << " eta = " << eta << " phi = " << phi << endl;
 
   double mass    = 0.1056583715;
   double theta   = 2.*atan(exp(-eta));
