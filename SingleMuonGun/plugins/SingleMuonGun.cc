@@ -62,7 +62,7 @@ using namespace CLHEP;
 // class declaration
 //
 
-class SingleMuonGun : public edm::one::EDProducer<> { //understand <> better 
+class SingleMuonGun : public edm::one::EDProducer<edm::one::SharedResources> { //understand <> better 
   public:
     explicit SingleMuonGun(const edm::ParameterSet&);
     ~SingleMuonGun();
@@ -145,6 +145,9 @@ SingleMuonGun::SingleMuonGun(const edm::ParameterSet& iConfig)
   f2->SetParameters(f2params);
   f2->SetNpx(200);
   f2->SetNpy(200);
+
+
+  std::cout << "test constructor" << std::endl;
   
 }
 
@@ -162,9 +165,12 @@ SingleMuonGun::~SingleMuonGun()
 // member functions
 //
 
+
 // ------------ method called on each new Event  ------------
 void SingleMuonGun::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)  
 {
+
+  std::cout << "test produce" << std::endl;
 
 
   edm::Service<edm::RandomNumberGenerator> rng;
@@ -248,6 +254,7 @@ void SingleMuonGun::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
 void 
 SingleMuonGun::beginJob()
 {
+   std::cout << "test begin job" << std::endl;
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -260,6 +267,7 @@ SingleMuonGun::endJob()
 void 
 SingleMuonGun::beginRun(edm::Run& iRun, edm::EventSetup const& iSetup)
 {
+  std::cout << "test begin run" << std::endl;
 }
 
 // ------------ method called when ending the processing of a run  ------------
