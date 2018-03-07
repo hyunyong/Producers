@@ -104,6 +104,7 @@ class SingleMuonGun : public edm::one::EDProducer<edm::one::SharedResources> { /
   double muon_sign_double;
   double muon_eta_sign_double;
 
+ 
   
 };
 
@@ -140,13 +141,14 @@ SingleMuonGun::SingleMuonGun(const edm::ParameterSet& iConfig)
 
   produces<HepMCProduct>("unsmeared");
   produces<GenEventInfoProduct>();
-  produces<GenRunInfoProduct, InRun>();
+  //produces<GenRunInfoProduct, InRun>();
 
   f2->SetParameters(f2params);
   f2->SetNpx(200);
   f2->SetNpy(200);
 
 
+  usesResource("SingleMuonGun");
   std::cout << "test constructor" << std::endl;
   
 }
