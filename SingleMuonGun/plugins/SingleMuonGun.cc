@@ -149,7 +149,6 @@ SingleMuonGun::SingleMuonGun(const edm::ParameterSet& iConfig)
 
 
   usesResource("SingleMuonGun");
-  std::cout << "test constructor" << std::endl;
   
 }
 
@@ -256,7 +255,6 @@ void SingleMuonGun::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
 void 
 SingleMuonGun::beginJob()
 {
-   std::cout << "test begin job" << std::endl;
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -269,7 +267,6 @@ SingleMuonGun::endJob()
 void 
 SingleMuonGun::beginRun(edm::Run& iRun, edm::EventSetup const& iSetup)
 {
-  std::cout << "test begin run" << std::endl;
 }
 
 // ------------ method called when ending the processing of a run  ------------
