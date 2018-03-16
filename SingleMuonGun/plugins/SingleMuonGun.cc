@@ -182,7 +182,8 @@ void SingleMuonGun::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   HepMC::GenEvent* m_Evt = new HepMC::GenEvent();
   
-  HepMC::GenVertex* Vtx = new HepMC::GenVertex( HepMC::FourVector(0.0322161,-1.10814e-05, -0.0146611) );
+  //HepMC::GenVertex* Vtx = new HepMC::GenVertex( HepMC::FourVector(0.0322161,-1.10814e-05, -0.0146611) );
+  HepMC::GenVertex* Vtx = new HepMC::GenVertex( HepMC::FourVector(0.0, 0.0, 0.0) );
   
   muon_sign_double = CLHEP::RandFlat::shoot(engine, -1.0, 1.0) ;
   if ( muon_sign_double < 0 ) {
