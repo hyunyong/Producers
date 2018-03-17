@@ -41,7 +41,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    annotation = cms.untracked.string('TTbar_13TeV_TuneCUETP8M1_cfi nevts:10'),
+    annotation = cms.untracked.string('singleMuonGun step 1 nevts:10'),
     name = cms.untracked.string('Applications'),
     version = cms.untracked.string('$Revision: 1.19 $')
 )
