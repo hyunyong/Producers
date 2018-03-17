@@ -171,7 +171,6 @@ SingleMuonGun::~SingleMuonGun()
 void SingleMuonGun::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)  
 {
 
-  std::cout << "test produce" << std::endl;
 
 
   edm::Service<edm::RandomNumberGenerator> rng;
