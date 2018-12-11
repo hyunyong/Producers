@@ -207,7 +207,7 @@ void SingleMuonGun::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
     
 
   
-    f2->GetRandom2(pt,eta);
+    //f2->GetRandom2(pt,eta);
     if (muon_eta_sign_double < 0) eta *= -1;
   }
 

@@ -72,7 +72,7 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, '102X_postLS2_design_v7', '')
 
 process.generator = cms.EDProducer("SingleMuonGun",
-  Verbosity = cms.untracked.int32(00),  # 1  - print begin and end of event
+  Verbosity = cms.untracked.int32(20),  # 1  - print begin and end of event
                                        # 10 - print type of gun (constant or spectrum)
                                        # 20 - print muon parameters (q, pt, eta, phi)
                                        # 30 - print CMSSW event info
@@ -82,8 +82,8 @@ process.generator = cms.EDProducer("SingleMuonGun",
   # ****************************************************************************
   MinPt  = cms.double(1000.0),
   MaxPt  = cms.double(200.0),
-  MinEta = cms.double(-2.5),
-  MaxEta = cms.double(2.5),
+  MinEta = cms.double(1.4),
+  MaxEta = cms.double(2.6),
   MinPhi = cms.double(-3.14159265359),
   MaxPhi = cms.double(3.14159265359)
 )

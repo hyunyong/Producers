@@ -78,6 +78,100 @@ Ok, now we're cooking. Let's integrate our custom muon gun in:
 It works!
 
 
+What eta range do we need?
+
+http://cds.cern.ch/record/2628277/files/Images_cms_upg_o_g_b_ni_gem_re1_me0_grid_160229_mod.png
+
+Based on that, looks like 1.5 to 2.5. However, we need to expand the range just a bit since muons scatter and bend. Lets do 1.4 to 2.6
+
+
+6. So we change our config:
+
+	process.generator = cms.EDProducer("SingleMuonGun",
+	  Verbosity = cms.untracked.int32(20),  # 1  - print begin and end of event
+	                                       # 10 - print type of gun (constant or spectrum)
+	                                       # 20 - print muon parameters (q, pt, eta, phi)
+	                                       # 30 - print CMSSW event info
+	  # IMPORTANT! *****************************************************************
+	  ConstPt_eq_MinPt = cms.bool(False), # if TRUE  then generate muons with CONSTANT pT = MinPt
+	                                      # if FALSE then generate muons with pT spectrum of muons as in 2012 data (hardcoded in SingleMuonGun/plugins/SingleMuonGun.cc)
+	  # ****************************************************************************
+	  MinPt  = cms.double(1000.0),
+	  MaxPt  = cms.double(200.0),
+	  MinEta = cms.double(1.4),
+	  MaxEta = cms.double(2.6),
+	  MinPhi = cms.double(-3.14159265359),
+	  MaxPhi = cms.double(3.14159265359)
+	)
+
+
+We get this result:
+
+Begin processing the 1st record. Run 1, Event 1, LumiSection 1 on stream 0 at 11-Dec-2018 22:01:51.649 CET
+ SingleMuonGunProducer : Begin New Event Generation
+ SingleMuonGunProducer : Gun with simulated 13TeV (Run2)
+ SingleMuonGunProducer : muon ID = -13 q = 1 pT = 37.8009 eta = 0.762708 phi = -1.53704
+ SingleMuonGunProducer : Event Generation Done
+... 
+
+ Eta is not working based on that range. Lets look in ../plugins/SingleMuonGun.cc and find out why. 
+
+
+ Line 210 shows the issue:
+
+    f2->GetRandom2(pt,eta);
+    if (muon_eta_sign_double < 0) eta *= -1;
+
+ f2 is overidding our custom eta range. 
+
+7. So lets comment that out and see what happens. Be sure to compile again. 
+
+Now doing CMS run it seems to be working! We already have a line to flip the sign randomly, so we don't need to worry about -eta. 
+
+Lets make sure the GEM collection is actually there:
+
+8. Lets make sure the GEM collection is actually there:
+
+	root -l SingleMuPt10_pythia8_cfi_GEN_SIM_DIGI_L1_DIGI2RAW_RAW2DIGI_L1Reco_RECO.root
+
+	.ls
+
+	Events->Print()
+
+
+Looks like it:
+
+*............................................................................*
+*Branch  :GEMDetIdGEMRecHitsOwnedRangeMap_gemRecHits__RECO.                  *
+*Entries :       10 : BranchElement (see below)                              *
+*............................................................................*
+*Br  382 :GEMDetIdGEMRecHitsOwnedRangeMap_gemRecHits__RECO.present : Bool_t  *
+*Entries :       10 : Total  Size=        828 bytes  File Size  =        135 *
+*Baskets :        1 : Basket Size=      16384 bytes  Compression=   1.00     *
+*............................................................................*
+*Br  383 :GEMDetIdGEMRecHitsOwnedRangeMap_gemRecHits__RECO.obj : edm:        *
+*         | :RangeMap<GEMDetId,edm::OwnVector<GEMRecHit,edm:                 *
+*         | :ClonePolicy<GEMRecHit> >,edm::ClonePolicy<GEMRecHit> >          *
+*Entries :       10 : Total  Size=       1166 bytes  File Size  =        197 *
+*Baskets :        1 : Basket Size=      16384 bytes  Compression=   2.48     *
+*............................................................................*
+*Branch  :GEMDetIdGEMSegmentsOwnedRangeMap_gemSegments__RECO.                *
+*Entries :       10 : BranchElement (see below)                              *
+*............................................................................*
+*Br  384 :GEMDetIdGEMSegmentsOwnedRangeMap_gemSegments__RECO.present : Bool_t*
+*Entries :       10 : Total  Size=        838 bytes  File Size  =        137 *
+*Baskets :        1 : Basket Size=      16384 bytes  Compression=   1.00     *
+*............................................................................*
+*Br  385 :GEMDetIdGEMSegmentsOwnedRangeMap_gemSegments__RECO.obj : edm:      *
+*         | :RangeMap<GEMDetId,edm::OwnVector<GEMSegment,edm:                *
+*         | :ClonePolicy<GEMSegment> >,edm::ClonePolicy<GEMSegment> >        *
+*Entries :       10 : Total  Size=       1176 bytes  File Size  =        198 *
+*Baskets :        1 : Basket Size=      16384 bytes  Compression=   2.48     *
+*............................................................................*
+
+
+
+
 
 
 
