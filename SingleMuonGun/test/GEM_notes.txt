@@ -1,0 +1,64 @@
+1. Checkout CMSSW:
+
+	cmsrel CMSSW_10_2_5_patch1
+
+	cd CMSSW_10_2_5_patch1/src
+
+	cmsenv
+
+2. get producer code:
+
+	git clone git@github.com:cms-mual/Producers.git
+
+	scram b -j8
+
+	cd Producers/SingleMuonGun/test/
+
+3. run cmsDriver command:
+
+	cmsDriver.py SingleMuPt10_pythia8_cfi  --conditions 102X_postLS2_design_v7 -n 10 --era Run3 -s GEN,SIM,DIGI:pdigi_valid,L1,DIGI2RAW,RAW2DIGI,L1Reco,RECO --datatier GEN-SIM-RECO --beamspot GaussSigmaZ4cm --geometry Extended2019
+
+
+It works! Ok, now lets get our custom single muon gun working. 
+
+
+
+
+
+
+
+Luca's email:
+
+Dear All,
+
+You are in this email because you are interested in the alignment of the GEM detector. We (individually) already discussed about few ideas to start this task.
+Let me suggest here an action list for the next week:
+
+1) Produce Single Muon GUN.
+RELASE: CMSSW_10_2_5_patch1
+You get it by:
+	export SCRAM_ARCH=slc6_amd64_gcc700
+	cmsrel CMSSW_10_2_5_patch1
+The cmsDriver command to create the cfg file from SingleMuPt10_pythia8_cfi.py is:
+	cmsDriver.py SingleMuPt10_pythia8_cfi  --conditions 102X_postLS2_design_v7 -n 10 --era Run3 -s GEN,SIM,DIGI:pdigi_valid,L1,DIGI2RAW,RAW2DIGI,L1Reco,RECO --datatier GEN-SIM-RECO --beamspot GaussSigmaZ4cm --geometry Extended2019  
+@Mohit + Adrian + Ryan could you start a MC generation? Please hack the file in order to generate muons only around a specific GEM chamber (Ryan is an expert on this).
+
+2) We have a code that can produce residual and distributions. It is a code from Tao.
+@Mohit could you prepare some slides where you summarize how to run the code and what is does?
+In my opinion it would be nice to:
+. Run the code and see residual and distributions on:
+	Ideal MC (simply run the cmsDriver command I gave you).
+	Data (as soon we have a good RUN)
+	Misaligned MC. Run the cmsDriver command I gave you, after intorducing a misalignment in one coordinate. Unfortunately this is not straightforward, since we should create a GEMAlignmentRcd class and update a GEM geometry builder to consume it. We can copy what is done for DT [1]. But this could take a bit. We can come out with simpler way to introduce a smearing.
+. Document all these studies in an document (DN or git twiki)
+
+3) We need a response about the question: 'are strips on GEM really radial'? We are investigating on a separate email thread 'CAD file for GEM'.
+While we keep investigating, I want to point you on [2]. In slide 6 you see a single strip from 3 VFAT using on the left the electronic map with inverse ordering, and on the right with correct ordering. This is probably not answering our question, but it is still quite interesting to see.
+
+4) For the rookies: please feel free to ask around about any command/technicalities you are not familiar with.
+
+Cheers,
+Luca
+
+[1] https://cmssdt.cern.ch/lxr/source/Geometry/DTGeometryBuilder/plugins/DTGeometryESModule.cc#0073
+[2] https://indico.cern.ch/event/760356/#2-gem-emap
