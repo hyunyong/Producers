@@ -193,7 +193,7 @@ void SingleMuonGun::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
     m_charge = -1;
   }
   
-  eta = CLHEP::RandFlat::shoot(engine, m_minEta, m_maxEta);
+  //eta = CLHEP::RandFlat::shoot(engine, m_minEta, m_maxEta);
   phi = CLHEP::RandFlat::shoot(engine, m_minPhi, m_maxPhi);
  
   muon_eta_sign_double = CLHEP::RandFlat::shoot(engine, -1.0, 1.0);
@@ -208,6 +208,7 @@ void SingleMuonGun::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   
     f2->GetRandom2(pt,eta);
+    eta = CLHEP::RandFlat::shoot(engine, m_minEta, m_maxEta);
     if (muon_eta_sign_double < 0) eta *= -1;
   }
 

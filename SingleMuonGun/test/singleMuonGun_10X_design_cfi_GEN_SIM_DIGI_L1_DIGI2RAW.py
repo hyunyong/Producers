@@ -83,8 +83,8 @@ process.generator = cms.EDProducer("SingleMuonGun",
   # ****************************************************************************
   MinPt  = cms.double(1000.0),
   MaxPt  = cms.double(200.0),
-  MinEta = cms.double(-2.5),
-  MaxEta = cms.double(2.5),
+  MinEta = cms.double(-2.8),
+  MaxEta = cms.double(2.8),
   MinPhi = cms.double(-3.14159265359),
   MaxPhi = cms.double(3.14159265359)
 )
