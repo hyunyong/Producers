@@ -1,10 +1,10 @@
 # Producers
 
-##Setup crab3
+## Setup crab3
 ```bash
 source /cvmfs/cms.cern.ch/crab3/crab.sh 
 ```
-##GEM 2021 Geometry Single Muon Gun
+## GEM 2021 Geometry Single Muon Gun
 ```bash
 scram p -n gemSingleMuon CMSSW CMSSW_11_0_0_pre3
 cd gemSingleMuon/src
@@ -14,6 +14,8 @@ scram b -j8
 cd Producers/SingleMuonGun/test
 crab submit -c crabConfig_step1.py
 ```
-##crab config
+## crab config
+```bash
 config.Data.outLFNDirBase = '/store/group/lpcgem/singleMuonGun_110X_2021_design_step1'
 config.Site.storageSite = 'T3_US_FNALLPC'
+```
