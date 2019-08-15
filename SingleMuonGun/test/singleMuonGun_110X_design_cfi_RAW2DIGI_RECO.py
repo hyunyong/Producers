@@ -73,6 +73,9 @@ else:
 #      'keep *_globalCosmicMuons_*_*',
 #      'keep *_globalCosmicMuons1Leg_*_*',
       # Keep all muon hits information
+      'keep *_muonGEMDigis_*_*',
+      'keep *_gemRecHits_*_*',
+      'keep *_gemSegments_*_*',
       'keep *_muonCSCDigis_*_*',
       'keep *_muonDTDigis_*_*',
       'keep *_muonRPCDigis_*_*',
