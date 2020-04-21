@@ -5,9 +5,9 @@
 # with command line options: TTbar_13TeV_TuneCUETP8M1_cfi --conditions auto:phase1_2018_design -n 10 --eventcontent RAWSIM -s GEN,SIM,DIGI,L1,DIGI2RAW --datatier GEN-SIM-RAW --era Run2_2018 --beamspot GaussSigmaZ4cm --geometry DB:Extended --fileout file:step1.root --no_exec
 import FWCore.ParameterSet.Config as cms
 
-from Configuration.StandardSequences.Eras import eras
+from Configuration.Eras.Era_Run3_cff import Run3
 
-process = cms.Process('DIGI2RAW',eras.Run3)
+process = cms.Process('SIM2RAW',Run3)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -15,8 +15,8 @@ process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
-process.load('Configuration.Geometry.GeometryExtended2021Reco_cff')
-process.load('Configuration.Geometry.GeometryExtended2021_cff')
+process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
+process.load('Configuration.StandardSequences.GeometrySimDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.Generator_cff')
 process.load('IOMC.EventVertexGenerators.VtxSmearedGaussSigmaZ4cm_cfi')
@@ -70,7 +70,7 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
 #process.XMLFromDBSource.label = cms.string("Extended")
 process.genstepfilter.triggerConditions=cms.vstring("generation_step")
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2021_design', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2021_realistic', '')
 
 process.generator = cms.EDProducer("SingleMuonGun",
   Verbosity = cms.untracked.int32(00),  # 1  - print begin and end of event
@@ -81,10 +81,10 @@ process.generator = cms.EDProducer("SingleMuonGun",
   ConstPt_eq_MinPt = cms.bool(False), # if TRUE  then generate muons with CONSTANT pT = MinPt
                                       # if FALSE then generate muons with pT spectrum of muons as in 2012 data (hardcoded in SingleMuonGun/plugins/SingleMuonGun.cc)
   # ****************************************************************************
-  MinPt  = cms.double(1000.0),
-  MaxPt  = cms.double(200.0),
-  MinEta = cms.double(-2.8),
-  MaxEta = cms.double(2.8),
+  MinPt  = cms.double(200.0),
+  MaxPt  = cms.double(30.0),
+  MinEta = cms.double(-2.5),
+  MaxEta = cms.double(2.5),
   MinPhi = cms.double(-3.14159265359),
   MaxPhi = cms.double(3.14159265359)
 )
